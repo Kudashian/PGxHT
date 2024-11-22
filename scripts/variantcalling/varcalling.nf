@@ -1,5 +1,7 @@
 #!/usr/bin/env nextflow
 
+#Some samples were sequenced multiple times and therefore were aligned twice before being combined
+
 nextflow.enable.dsl=1
 
 ref_file_37 = params.ref_file_37
