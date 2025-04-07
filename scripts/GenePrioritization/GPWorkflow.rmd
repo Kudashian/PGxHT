@@ -1,0 +1,37 @@
+# Script for making a priority list of genes using PharmGKB table - KN
+
+#Directory with downloaded table from PharmGKB
+setwd("path/to/wd")
+
+#Install required packages
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("tidyverse")
+
+library('tidyverse')
+
+#Load table
+GeneTable = read_delim("PharmGKB_ibputtable.tsv",
+                       delim = '\t',)
+
+#Remove entries without a gene
+PriorityGeneList <- subset(GeneTable,
+                           is.na(GeneTable$Genes) == FALSE)
+
+#Remove entries where there is no association
+PriorityGeneList <- subset(PriorityGeneList,
+                           PriorityGeneList$Significance == "yes")
+
+#Remove entries where drug is not hydrochlorothiazide
+PriorityGeneList <- subset(PriorityGeneList,
+                           PriorityGeneList$Drugs == "hydrochlorothiazide")
+
+#Remove entries where phenotype is efficacy related
+PriorityGeneList <- subset(PriorityGeneList,
+                           PriorityGeneList$`Phenotype Categories` == 'Efficacy')
+
+#Remove math sign from p-values and sort p-values from smallest to largest
+PriorityGeneList$`P-Value` <- substring(PriorityGeneList$`P-Value`,2,nchar(PriorityGeneList$`P-Value`))
+PriorityGeneList <- arrange(PriorityGeneList, desc(`# of Cases`))
